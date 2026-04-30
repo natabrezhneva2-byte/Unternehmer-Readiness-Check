@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unternehmer-Readiness-Check | Marco Groß</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --sandton: #E7DACA;
+            --jeans: #7FAEBD;
+            --petrol: #167CA1;
+            --orange: #FC8D29;
+            --braun: #928A80;
+            --hellgrau: #B4C2C7;
+            --text: #374F57;
+            --gruen: #16A541;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, var(--sandton) 0%, #ffffff 100%);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(55, 79, 87, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: var(--petrol);
+            color: white;
+            padding: 50px 40px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 15px;
+            line-height: 1.2;
+        }
+
+        .header p {
+            font-size: 20px;
+            opacity: 0.9;
+            font-weight: 500;
+        }
+
+        .progress-container {
+            background: var(--hellgrau);
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: rgba(22, 124, 161, 0.2);
+            border-radius: 10px;
+            margin-right: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--petrol);
+            border-radius: 10px;
+            transition: width 0.4s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            font-weight: 700;
+            color: var(--petrol);
+            font-size: 18px;
+            white-space: nowrap;
+        }
+
+        .content {
+            padding: 50px 40px;
+        }
+
+        .question-container {
+            display: none;
+        }
+
+        .question-container.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-number {
+            color: var(--orange);
+            font-weight: 700;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--petrol);
+            margin-bottom: 35px;
+            line-height: 1.3;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: var(--sandton);
+            border: 3px solid transparent;
+            border-radius: 12px;
+            padding: 20px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 18px;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .option:hover {
+            border-color: var(--petrol);
+            background: #f5f0e8;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            border-color: var(--petrol);
+            background: var(--petrol);
+            color: white;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 20px;
+        }
+
+        .btn {
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+        }
+
+        .btn-primary {
+            background: var(--petrol);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #135c7f;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(22, 124, 161, 0.3);
+        }
+
+        .btn-primary:disabled {
+            background: var(--hellgrau);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            background: var(--hellgrau);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--braun);
+            color: white;
+        }
+
+        .result-container {
+            display: none;
+        }
+
+        .result-container.active {
+            display: block;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .result-badge {
+            display: inline-block;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 16px;
+            margin-bottom: 25px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .result-badge.feuerwehr {
+            background: var(--orange);
+            color: white;
+        }
+
+        .result-badge.uebergang {
+            background: var(--jeans);
+            color: white;
+        }
+
+        .result-badge.stabil {
+            background: var(--gruen);
+            color: white;
+        }
+
+        .result-title {
+            font-size: 38px;
+            font-weight: 900;
+            color: var(--petrol);
+            margin-bottom: 25px;
+            line-height: 1.2;
+        }
+
+        .result-description {
+            font-size: 20px;
+            line-height: 1.7;
+            margin-bottom: 30px;
+            color: var(--text);
+        }
+
+        .result-description p {
+            margin-bottom: 20px;
+        }
+
+        .next-steps {
+            background: var(--sandton);
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+        }
+
+        .next-steps h3 {
+            font-size: 24px;
+            color: var(--petrol);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .next-steps ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .next-steps li {
+            padding: 12px 0;
+            padding-left: 30px;
+            position: relative;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+        .next-steps li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: var(--petrol);
+            font-weight: 700;
+            font-size: 20px;
+        }
+
+        .cta-box {
+            background: var(--petrol);
+            color: white;
+            padding: 40px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .cta-box h3 {
+            font-size: 28px;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .cta-box p {
+            font-size: 18px;
+            margin-bottom: 25px;
+            opacity: 0.95;
+        }
+
+        .email-form {
+            display: flex;
+            gap: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .email-input {
+            flex: 1;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .btn-cta {
+            background: var(--orange);
+            color: white;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cta:hover {
+            background: #e67d1f;
+            transform: translateY(-2px);
+        }
+
+        .camp-link {
+            display: inline-block;
+            margin-top: 25px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 18px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+            transition: border-color 0.3s ease;
+        }
+
+        .camp-link:hover {
+            border-bottom-color: white;
+        }
+
+        .footer {
+            background: var(--sandton);
+            padding: 30px 40px;
+            text-align: center;
+            font-size: 16px;
+            color: var(--text);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 28px;
+            }
+
+            .header p {
+                font-size: 18px;
+            }
+
+            .content {
+                padding: 30px 25px;
+            }
+
+            .question-text {
+                font-size: 24px;
+            }
+
+            .result-title {
+                font-size: 30px;
+            }
+
+            .email-form {
+                flex-direction: column;
+            }
+
+            .progress-container {
+                padding: 15px 25px;
+            }
+
+            .navigation {
+                flex-direction: column-reverse;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <h1>Unternehmer-Readiness-Check</h1>
+        <p>Bist du bereit, wirklich etwas zu verändern?</p>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="progress-text" id="progressText">1/8</div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+        <!-- Question 1 -->
+        <div class="question-container active" data-question="1">
+            <div class="question-number">Frage 1 von 8</div>
+            <div class="question-text">Wie viele Stunden arbeitest du pro Woche im operativen Geschäft?</div>
+            <div class="options">
+                <div class="option" data-value="4">Unter 20h – Ich steuere hauptsächlich</div>
+                <div class="option" data-value="3">20-40h – Mix aus Steuerung und Tagesgeschäft</div>
+                <div class="option" data-value="2">40-60h – Ich bin voll im operativen Geschäft</div>
+                <div class="option" data-value="1">Über 60h – Ich bin das operative Geschäft</div>
+            </div>
+        </div>
+
+        <!-- Question 2 -->
+        <div class="question-container" data-question="2">
+            <div class="question-number">Frage 2 von 8</div>
+            <div class="question-text">Was passiert, wenn du 2 Wochen nicht erreichbar bist?</div>
+            <div class="options">
+                <div class="option" data-value="4">Läuft normal weiter</div>
+                <div class="option" data-value="3">Läuft mit kleinen Verzögerungen</div>
+                <div class="option" data-value="2">Wichtige Entscheidungen bleiben liegen</div>
+                <div class="option" data-value="1">Würde zusammenbrechen</div>
+            </div>
+        </div>
+
+        <!-- Question 3 -->
+        <div class="question-container" data-question="3">
+            <div class="question-number">Frage 3 von 8</div>
+            <div class="question-text">Wie viele Rückfragen bekommst du täglich zu Entscheidungen?</div>
+            <div class="options">
+                <div class="option" data-value="4">0-2 – Team entscheidet selbst</div>
+                <div class="option" data-value="3">3-5 – Gelegentliche Rückfragen</div>
+                <div class="option" data-value="2">6-10 – Regelmäßige Rückfragen</div>
+                <div class="option" data-value="1">10+ – Dauerschleife</div>
+            </div>
+        </div>
+
+        <!-- Question 4 -->
+        <div class="question-container" data-question="4">
+            <div class="question-number">Frage 4 von 8</div>
+            <div class="question-text">Haben deine Führungskräfte klare Entscheidungsbefugnisse?</div>
+            <div class="options">
+                <div class="option" data-value="4">Ja, schriftlich festgehalten mit Budgets</div>
+                <div class="option" data-value="3">Ja, aber nur mündlich vereinbart</div>
+                <div class="option" data-value="2">Teilweise, aber unklar wo die Grenze ist</div>
+                <div class="option" data-value="1">Nein, alles landet bei mir</div>
+            </div>
+        </div>
+
+        <!-- Question 5 -->
+        <div class="question-container" data-question="5">
+            <div class="question-number">Frage 5 von 8</div>
+            <div class="question-text">Wie wird KI in deinem Unternehmen genutzt?</div>
+            <div class="options">
+                <div class="option" data-value="4">Strategisch mit klarer Ownership</div>
+                <div class="option" data-value="3">Einzelne Teams experimentieren koordiniert</div>
+                <div class="option" data-value="2">Jeder probiert wild rum</div>
+                <div class="option" data-value="1">Wird diskutiert, aber nicht umgesetzt</div>
+            </div>
+        </div>
+
+        <!-- Question 6 -->
+        <div class="question-container" data-question="6">
+            <div class="question-number">Frage 6 von 8</div>
+            <div class="question-text">Wann hast du das letzte Mal bewusst AM Unternehmen gearbeitet (nicht IM Unternehmen)?</div>
+            <div class="options">
+                <div class="option" data-value="4">Diese Woche</div>
+                <div class="option" data-value="3">Vor 2-4 Wochen</div>
+                <div class="option" data-value="2">Vor mehreren Monaten</div>
+                <div class="option" data-value="1">Kann mich nicht erinnern</div>
+            </div>
+        </div>
+
+        <!-- Question 7 -->
+        <div class="question-container" data-question="7">
+            <div class="question-number">Frage 7 von 8</div>
+            <div class="question-text">Wie fühlst du dich aktuell?</div>
+            <div class="options">
+                <div class="option" data-value="4">Energiegeladen und klar</div>
+                <div class="option" data-value="3">Gestresst, aber noch im Griff</div>
+                <div class="option" data-value="2">Erschöpft und überlastet</div>
+                <div class="option" data-value="1">Kurz vor Burnout</div>
+            </div>
+        </div>
+
+        <!-- Question 8 -->
+        <div class="question-container" data-question="8">
+            <div class="question-number">Frage 8 von 8</div>
+            <div class="question-text">Was hält dich davon ab, wirklich etwas zu verändern?</div>
+            <div class="options">
+                <div class="option" data-value="4">Nichts – ich bin bereit</div>
+                <div class="option" data-value="3">Keine Zeit im Alltag</div>
+                <div class="option" data-value="2">Unsicherheit, wo anfangen</div>
+                <div class="option" data-value="1">Glaube nicht, dass es möglich ist</div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation" id="navigation" style="display: none;">
+            <button class="btn btn-secondary" id="prevBtn">Zurück</button>
+            <button class="btn btn-primary" id="nextBtn" disabled>Weiter</button>
+        </div>
+
+        <!-- Results -->
+        <div class="result-container" id="resultFeuerwehr">
+            <div class="result-badge feuerwehr">Feuerwehr-Modus</div>
+            <h2 class="result-title">Du bist im Hamsterrad.</h2>
+            <div class="result-description">
+                <p>Du arbeitest nicht zu wenig. Du arbeitest am falschen Ende.</p>
+                <p>Dein Unternehmen läuft nur, weil du es zusammenhältst. Nicht, weil es Strukturen hat.</p>
+                <p>Das kostet dich Energie, Gesundheit und Perspektive.</p>
+            </div>
+
+            <div class="next-steps">
+                <h3>Was du brauchst:</h3>
+                <ul>
+                    <li>Sofortigen Abstand vom Alltag</li>
+                    <li>Klarheit über deine größten Engpässe</li>
+                    <li>Konkrete Strukturen, die dich entlasten</li>
+                </ul>
+            </div>
+
+            <div class="cta-box">
+                <h3>Hol dir deinen kostenlosen Struktur-Report</h3>
+                <p>Detaillierte Auswertung + die 3 wichtigsten nächsten Schritte</p>
+                <form class="email-form" onsubmit="handleEmailSubmit(event)">
+                    <input type="email" class="email-input" placeholder="Deine E-Mail" required>
+                    <button type="submit" class="btn-cta">Report anfordern</button>
+                </form>
+                <a href="https://unternehmercamp.marco-gross.hamburg" class="camp-link" target="_blank">
+                    → Mehr über das Unternehmer Camp
+                </a>
+            </div>
+        </div>
+
+        <div class="result-container" id="resultUebergang">
+            <div class="result-badge uebergang">Übergangsphase</div>
+            <h2 class="result-title">Du bist auf dem Weg – aber es wackelt noch.</h2>
+            <div class="result-description">
+                <p>Erste Strukturen entstehen. Aber sie sind nicht stabil genug.</p>
+                <p>Bei Stress fällst du zurück in alte Muster. Du übernimmst wieder selbst. Dein Team wartet wieder.</p>
+            </div>
+
+            <div class="next-steps">
+                <h3>Was du brauchst:</h3>
+                <ul>
+                    <li>Verbindliche Strukturen statt guter Vorsätze</li>
+                    <li>Klarheit in Rollen und Entscheidungen</li>
+                    <li>Führung, die auch ohne dich funktioniert</li>
+                </ul>
+            </div>
+
+            <div class="cta-box">
+                <h3>Hol dir deinen kostenlosen Struktur-Report</h3>
+                <p>Detaillierte Auswertung + die 3 wichtigsten nächsten Schritte</p>
+                <form class="email-form" onsubmit="handleEmailSubmit(event)">
+                    <input type="email" class="email-input" placeholder="Deine E-Mail" required>
+                    <button type="submit" class="btn-cta">Report anfordern</button>
+                </form>
+                <a href="https://unternehmercamp.marco-gross.hamburg" class="camp-link" target="_blank">
+                    → Mehr über das Unternehmer Camp
+                </a>
+            </div>
+        </div>
+
+        <div class="result-container" id="resultStabil">
+            <div class="result-badge stabil">Systemisch stabil</div>
+            <h2 class="result-title">Du führst dein Unternehmen – es führt nicht dich.</h2>
+            <div class="result-description">
+                <p>Du hast Strukturen aufgebaut. Dein Team entscheidet. Du arbeitest AM Unternehmen, nicht nur drin.</p>
+                <p>Glückwunsch. Du bist weiter als die meisten.</p>
+            </div>
+
+            <div class="next-steps">
+                <h3>Was du brauchst:</h3>
+                <ul>
+                    <li>Austausch mit anderen, die auf diesem Level sind</li>
+                    <li>Weiterentwicklung (z.B. KI-Integration)</li>
+                    <li>Neue Impulse für die nächste Phase</li>
+                </ul>
+            </div>
+
+            <div class="cta-box">
+                <h3>Hol dir deinen kostenlosen Struktur-Report</h3>
+                <p>Detaillierte Auswertung + die 3 wichtigsten nächsten Schritte</p>
+                <form class="email-form" onsubmit="handleEmailSubmit(event)">
+                    <input type="email" class="email-input" placeholder="Deine E-Mail" required>
+                    <button type="submit" class="btn-cta">Report anfordern</button>
+                </form>
+                <a href="https://unternehmercamp.marco-gross.hamburg" class="camp-link" target="_blank">
+                    → Mehr über das Unternehmer Camp
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        Marco Groß · Leadership-Experte für Geschäftsführer im Mittelstand<br>
+        <a href="https://marco-gross.hamburg" style="color: var(--petrol); text-decoration: none; font-weight: 600;">marco-gross.hamburg</a>
+    </div>
+</div>
+
+<script>
+    let currentQuestion = 1;
+    const totalQuestions = 8;
+    const answers = {};
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        updateNavigation();
+        attachOptionListeners();
+        
+        document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+        document.getElementById('prevBtn').addEventListener('click', prevQuestion);
+    });
+
+    function attachOptionListeners() {
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const question = this.closest('.question-container').dataset.question;
+                const value = parseInt(this.dataset.value);
+                
+                // Remove selected from siblings
+                this.parentElement.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Add selected to this option
+                this.classList.add('selected');
+                
+                // Store answer
+                answers[question] = value;
+                
+                // Enable next button
+                document.getElementById('nextBtn').disabled = false;
+            });
+        });
+    }
+
+    function updateNavigation() {
+        const navDiv = document.getElementById('navigation');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        
+        if (currentQuestion === 1) {
+            prevBtn.style.display = 'none';
+            navDiv.style.display = 'flex';
+        } else {
+            prevBtn.style.display = 'block';
+            navDiv.style.display = 'flex';
+        }
+        
+        if (currentQuestion === totalQuestions) {
+            nextBtn.textContent = 'Ergebnis anzeigen';
+        } else {
+            nextBtn.textContent = 'Weiter';
+        }
+        
+        // Update progress
+        const progress = (currentQuestion / totalQuestions) * 100;
+        document.getElementById('progressFill').style.width = progress + '%';
+        document.getElementById('progressText').textContent = currentQuestion + '/' + totalQuestions;
+        
+        // Check if current question is answered
+        if (answers[currentQuestion]) {
+            nextBtn.disabled = false;
+        } else {
+            nextBtn.disabled = true;
+        }
+    }
+
+    function nextQuestion() {
+        if (currentQuestion < totalQuestions) {
+            // Hide current question
+            document.querySelector(`[data-question="${currentQuestion}"]`).classList.remove('active');
+            
+            // Show next question
+            currentQuestion++;
+            document.querySelector(`[data-question="${currentQuestion}"]`).classList.add('active');
+            
+            updateNavigation();
+        } else {
+            // Show results
+            showResults();
+        }
+    }
+
+    function prevQuestion() {
+        if (currentQuestion > 1) {
+            // Hide current question
+            document.querySelector(`[data-question="${currentQuestion}"]`).classList.remove('active');
+            
+            // Show previous question
+            currentQuestion--;
+            document.querySelector(`[data-question="${currentQuestion}"]`).classList.add('active');
+            
+            updateNavigation();
+        }
+    }
+
+    function showResults() {
+        // Calculate total score
+        const totalScore = Object.values(answers).reduce((sum, val) => sum + val, 0);
+        
+        // Hide all questions and navigation
+        document.querySelectorAll('.question-container').forEach(q => q.style.display = 'none');
+        document.getElementById('navigation').style.display = 'none';
+        
+        // Determine result type
+        let resultId;
+        if (totalScore <= 15) {
+            resultId = 'resultFeuerwehr';
+        } else if (totalScore <= 25) {
+            resultId = 'resultUebergang';
+        } else {
+            resultId = 'resultStabil';
+        }
+        
+        // Show result
+        document.getElementById(resultId).classList.add('active');
+        
+        // Update progress to 100%
+        document.getElementById('progressFill').style.width = '100%';
+        document.getElementById('progressText').textContent = 'Ergebnis';
+        
+        // Scroll to top
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function handleEmailSubmit(event) {
+        event.preventDefault();
+        const email = event.target.querySelector('input[type="email"]').value;
+        
+        // Here you would normally send this to your backend/email service
+        console.log('Email submitted:', email);
+        
+        // Show success message
+        event.target.innerHTML = '<div style="color: white; font-size: 18px; padding: 20px;">✓ Vielen Dank! Dein Report ist unterwegs.</div>';
+        
+        // Optional: You can integrate with services like:
+        // - Mailchimp
+        // - ActiveCampaign
+        // - Your own backend API
+        // - Google Forms
+        // - Zapier webhook
+    }
+</script>
+
+</body>
+</html>
